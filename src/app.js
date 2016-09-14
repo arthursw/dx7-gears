@@ -1,3 +1,5 @@
+// var paper = require('paper/dist/paper-full');
+
 var _ = require('lodash');
 var Angular = require('angular');
 var ngStorage = require('ngstorage');
@@ -31,6 +33,85 @@ var audioContext = new (window.AudioContext || window.webkitAudioContext)();
 var visualizer = new Visualizer("analysis", 256, 35, 0xc0cf35, 0x2f3409, audioContext);
 var scriptProcessor = null;
 
+var noteOffset = 50;
+// var qwertyNotes = [];
+
+// var keys1 = "azertyuiop";
+// var keys2 = "qsdfghjklm";
+// var keys3 = "wxcvbn";
+
+// var lowNote = 30;
+// for ( var i = 0; i < keys1.length; i++ ) {
+// 	qwertyNotes[keys1.charCodeAt(i)] = i + lowNote;
+// }
+// lowNote += keys1.length;
+
+// for ( var i = 0; i < keys2.length; i++ ) {
+// 	qwertyNotes[keys2.charCodeAt(i)] = i + lowNote;
+// }
+// lowNote += keys2.length;
+
+// for ( var i = 0; i < keys2.length; i++ ) {
+// 	qwertyNotes[keys3.charCodeAt(i)] = i + lowNote;
+// }
+
+var qwertyNotes = {};
+var keys = "AZERTYUIOPQSDFGHJKLMWXCVBN";
+
+for ( var i = 0; i < keys.length; i++ ) {
+	console.log(keys.charAt(i) + ": " + i)
+	qwertyNotes[keys.charAt(i)] = i;
+}
+
+//Lower row: zsxdcvgbhnjm...
+
+
+// qwertyNotes[16] = 41; // = F2
+// qwertyNotes[65] = 42;
+// qwertyNotes[90] = 43;
+// qwertyNotes[83] = 44;
+// qwertyNotes[88] = 45;
+// qwertyNotes[68] = 46;
+// qwertyNotes[67] = 47;
+// qwertyNotes[86] = 48; // = C3
+// qwertyNotes[71] = 49;
+// qwertyNotes[66] = 50;
+// qwertyNotes[72] = 51;
+// qwertyNotes[78] = 52;
+// qwertyNotes[77] = 53; // = F3
+// qwertyNotes[75] = 54;
+// qwertyNotes[188] = 55;
+// qwertyNotes[76] = 56;
+// qwertyNotes[190] = 57;
+// qwertyNotes[186] = 58;
+// qwertyNotes[191] = 59;
+
+// // Upper row: q2w3er5t6y7u...
+// qwertyNotes[81] = 60; // = C4 ("middle C")
+// qwertyNotes[50] = 61;
+// qwertyNotes[87] = 62;
+// qwertyNotes[51] = 63;
+// qwertyNotes[69] = 64;
+// qwertyNotes[82] = 65; // = F4
+// qwertyNotes[53] = 66;
+// qwertyNotes[84] = 67;
+// qwertyNotes[54] = 68;
+// qwertyNotes[89] = 69;
+// qwertyNotes[55] = 70;
+// qwertyNotes[85] = 71;
+// qwertyNotes[73] = 72; // = C5
+// qwertyNotes[57] = 73;
+// qwertyNotes[79] = 74;
+// qwertyNotes[48] = 75;
+// qwertyNotes[80] = 76;
+// qwertyNotes[219] = 77; // = F5
+// qwertyNotes[187] = 78;
+// qwertyNotes[221] = 79;
+// qwertyNotes[220] = 80;
+window.qwertyNotes = qwertyNotes;
+
+console.log(qwertyNotes);
+
 function initializeAudio() {
 	scriptProcessor = audioContext.createScriptProcessor(config.bufferSize, 0, 2);
 	scriptProcessor.connect(audioContext.destination);
@@ -60,7 +141,7 @@ function initializeAudio() {
 setInterval(function() {
 	var count = 0;
 	synth.voices.map(function(voice) { if (voice) count++; });
-	if (count) console.log("Current polyphony:", count);
+	// if (count) console.log("Current polyphony:", count);
 }, 1000);
 
 app.directive('toNumber', function() {
@@ -301,6 +382,7 @@ app.directive('slider', function() {
 	};
 });
 
+
 app.controller('MidiCtrl', ['$scope', '$http', function($scope, $http) {
 	// MIDI stuff
 	var self = this;
@@ -357,50 +439,8 @@ app.controller('MidiCtrl', ['$scope', '$http', function($scope, $http) {
 			"t120$l8 o4 v8 rr c c2 r   >f4 f4 g2        a+ g+ <c c2 >f f4 r f g2<" +
 			"              rr c c2 r   >f4 f4 g2        a+ g+ <c c2 >f f4 r f g2.<;"
 	];
-	var qwertyNotes = [];
-	//Lower row: zsxdcvgbhnjm...
-	qwertyNotes[16] = 41; // = F2
-	qwertyNotes[65] = 42;
-	qwertyNotes[90] = 43;
-	qwertyNotes[83] = 44;
-	qwertyNotes[88] = 45;
-	qwertyNotes[68] = 46;
-	qwertyNotes[67] = 47;
-	qwertyNotes[86] = 48; // = C3
-	qwertyNotes[71] = 49;
-	qwertyNotes[66] = 50;
-	qwertyNotes[72] = 51;
-	qwertyNotes[78] = 52;
-	qwertyNotes[77] = 53; // = F3
-	qwertyNotes[75] = 54;
-	qwertyNotes[188] = 55;
-	qwertyNotes[76] = 56;
-	qwertyNotes[190] = 57;
-	qwertyNotes[186] = 58;
-	qwertyNotes[191] = 59;
 
-	// Upper row: q2w3er5t6y7u...
-	qwertyNotes[81] = 60; // = C4 ("middle C")
-	qwertyNotes[50] = 61;
-	qwertyNotes[87] = 62;
-	qwertyNotes[51] = 63;
-	qwertyNotes[69] = 64;
-	qwertyNotes[82] = 65; // = F4
-	qwertyNotes[53] = 66;
-	qwertyNotes[84] = 67;
-	qwertyNotes[54] = 68;
-	qwertyNotes[89] = 69;
-	qwertyNotes[55] = 70;
-	qwertyNotes[85] = 71;
-	qwertyNotes[73] = 72; // = C5
-	qwertyNotes[57] = 73;
-	qwertyNotes[79] = 74;
-	qwertyNotes[48] = 75;
-	qwertyNotes[80] = 76;
-	qwertyNotes[219] = 77; // = F5
-	qwertyNotes[187] = 78;
-	qwertyNotes[221] = 79;
-	qwertyNotes[220] = 80;
+
 
 	this.createMML = function (idx) {
 		var mml = new MMLEmitter(audioContext, mmlDemos[idx]);
@@ -443,26 +483,30 @@ app.controller('MidiCtrl', ['$scope', '$http', function($scope, $http) {
 	};
 
 	this.onKeyDown = function(ev) {
-		var note = qwertyNotes[ev.keyCode];
+		// console.log("onKeyDown1");
+		var note = qwertyNotes[String.fromCharCode(ev.keyCode)] + noteOffset;
+
+		console.log("key code: " + ev.keyCode + ", char: " + String.fromCharCode(ev.keyCode) + ", note: " + note)
+
 		if (ev.metaKey) return false;
 		if (ev.keyCode == 32) {
 			synth.panic();
-			ev.stopPropagation();
-			ev.preventDefault();
+			// ev.stopPropagation();
+			// ev.preventDefault();
 			return false;
 		}
 		if (note) {
 			if (!ev.repeat) {
 				synth.noteOn(note, 0.8 + (ev.ctrlKey ? 0.47 : 0));
 			}
-			ev.stopPropagation();
-			ev.preventDefault();
+			// ev.stopPropagation();
+			// ev.preventDefault();
 		}
 		return false;
 	};
 
 	this.onKeyUp = function(ev) {
-		var note = qwertyNotes[ev.keyCode];
+		var note = qwertyNotes[String.fromCharCode(ev.keyCode)] + noteOffset;
 		if (note)
 			synth.noteOff(note);
 		return false;
@@ -470,6 +514,8 @@ app.controller('MidiCtrl', ['$scope', '$http', function($scope, $http) {
 
 	window.addEventListener('keydown', this.onKeyDown, false);
 	window.addEventListener('keyup', this.onKeyUp, false);
+
+
 }]);
 
 app.controller('OperatorCtrl', function($scope) {
@@ -486,6 +532,7 @@ app.controller('OperatorCtrl', function($scope) {
 		FMVoice.setPan($scope.operator.idx, $scope.operator.pan);
 	});
 });
+
 
 app.controller('PresetCtrl', ['$scope', '$localStorage', '$http', function ($scope, $localStorage, $http) {
 	var self = this;
@@ -604,3 +651,325 @@ app.controller('PresetCtrl', ['$scope', '$localStorage', '$http', function ($sco
 	}
 
 }]);
+
+
+app.directive('draw', function () {
+    return {
+        restrict: 'AEC',
+        link: function postLink(scope, element, attrs) {
+            var path;
+            var drag = false;
+			
+			var drawDelay = 8;
+            
+            var canvasWidth = 300;
+            var canvasHeight = 300;
+
+            var gridWidth = 3*4;
+            var gridHeight = 2*12;
+            
+            var cellWidth = canvasWidth / gridWidth;
+            var cellHeight = canvasHeight / gridHeight;
+
+			var paused = false;
+
+            var grid = [];
+
+            // initialize a 2D array of cells
+			var cells = [];
+			for (var x = 0; x < gridWidth; x += 1) {
+			    cells[x] = [];
+			    for (var y = 0; y < gridHeight; y += 1) {
+			        cells[x][y] = 0;
+			    }
+			}
+			// initialize a 2D array of cells for the next generation
+			var nextGen = [];
+			for (var x = 0; x < gridWidth; x += 1) {
+			    nextGen[x] = [];
+			    for (var y = 0; y < gridHeight; y += 1) {
+			        nextGen[x][y] = 0;
+			    }
+			}
+
+			var noteBuffer = new Map()
+			
+			// cells[0][10] = 1;
+			// cells[0][9] = 1;
+			// cells[0][8] = 1;
+			// cells[0][4] = 1;
+			// cells[0][3] = 1;
+			// cells[0][7] = 1;
+
+			function livesOn(x, y)
+			{
+			    // first count the number of live neighbors
+			    var numNeighbors = 0;
+			    for (var i = -1; i <= 1; i +=1 ) {
+			        for (var j = -1; j <= 1; j += 1) {
+			            var neighborX = (x + i + gridWidth) % gridWidth;
+			            var neighborY = (y + j + gridHeight) % gridHeight;
+			            
+			            if (neighborX !== x || neighborY !== y) {
+			                if (cells[neighborX][neighborY] === 1) {
+			                    numNeighbors += 1;
+			                }
+			            }
+			            
+			        }
+			    }
+			    // if the cell is living and has 2 or 3 live neighbors...
+			    if (cells[x][y] === 1 &&
+			            (numNeighbors === 2 || numNeighbors === 3)) {
+			        return true;
+			    }
+			    // if the cell is dead and has exactly 3 neighbors...
+			    if (cells[x][y] === 0 && numNeighbors === 3) {
+			        return true;
+			    }
+			    // otherwise it's either overpopulated or underpopulated
+			    // and the cell is dead
+			    return false;
+			};
+
+			function nextGeneration()
+			{
+				// console.log("next gen");
+			    for (var x = 0; x < gridWidth; x += 1) {
+			        for (var y = 0; y < gridHeight; y += 1) {
+			        	
+			        	// Update cells: rectangle grid
+			            if (cells[x][y] === 1) {
+				            grid[x][y].fillColor = { hue: 35, saturation: 0.8, brightness: 0.9 };
+			            } else {
+							grid[x][y].fillColor = "#4a4950";
+			            }
+
+			            // Update Synth
+			        	if(x == 0)
+			        	{
+							let note = y + noteOffset;
+				            let nb = noteBuffer.get(note) || 0;
+
+				            // set color and draw
+				            if (cells[x][y] === 1) {
+				            	console.log("note buffer: " + nb + ", note: " + note);
+				            	if (nb < 3) {
+				            		synth.noteOn(note, 0.8);
+				            		noteBuffer.set(note, 3);
+				            		console.log("note buffer: " + noteBuffer.get(note) + ", note: " + note);
+				            	}
+
+				            } else {
+				                
+				                if(nb > 0) {
+				                	noteBuffer.set(note, nb-1);
+				                } else if (nb == 0) {
+				                	synth.noteOff(note, 0.8);
+				                	noteBuffer.set(note, nb-1);
+				                }
+
+				            }
+			        	}
+
+			        	// Set next gen to the left cell: time propagation
+			        	nextGen[x][y] = cells[(x - 1 + gridWidth) % gridWidth][y];
+
+			            // build next generation array
+			            if(x === 0) {
+			                if (livesOn(x,y)) {
+			                    nextGen[x][y] = 1;
+			                }
+			                else {
+			                    nextGen[x][y] = 0;
+			                }
+			            }
+			            
+			        }
+			    }
+			    // copy next generation into current generation array
+			    for (var i = 0; i < gridWidth; i += 1) {
+			        for (var j = 0; j < gridHeight; j += 1) {
+			            cells[i][j] = nextGen[i][j];
+			        }
+			    }
+			};
+
+			// Accepts a MouseEvent as input and returns the x and y
+		    // coordinates relative to the target element.
+		    var getCrossBrowserElementCoords = function (mouseEvent)
+		    {
+		      var result = {
+		        x: 0,
+		        y: 0
+		      };
+
+		      if (!mouseEvent)
+		      {
+		        mouseEvent = window.event;
+		      }
+
+		      if (mouseEvent.pageX || mouseEvent.pageY)
+		      {
+		        result.x = mouseEvent.pageX;
+		        result.y = mouseEvent.pageY;
+		      }
+		      else if (mouseEvent.clientX || mouseEvent.clientY)
+		      {
+		        result.x = mouseEvent.clientX + document.body.scrollLeft +
+		          document.documentElement.scrollLeft;
+		        result.y = mouseEvent.clientY + document.body.scrollTop +
+		          document.documentElement.scrollTop;
+		      }
+
+		      if (mouseEvent.target)
+		      {
+		        var offEl = mouseEvent.target;
+		        var offX = 0;
+		        var offY = 0;
+
+		        if (typeof(offEl.offsetParent) != "undefined")
+		        {
+		          while (offEl)
+		          {
+		            offX += offEl.offsetLeft;
+		            offY += offEl.offsetTop;
+
+		            offEl = offEl.offsetParent;
+		          }
+		        }
+		        else
+		        {
+		          offX = offEl.x;
+		          offY = offEl.y;
+		        }
+
+		        result.x -= offX;
+		        result.y -= offY;
+		      }
+
+		      result.x *= 0.5;
+		      result.y *= 0.5;
+
+		      return result;
+		    };
+
+            function mouseUp(event) {
+                //Clear Mouse Drag Flag
+                drag = false;
+            }
+
+            function mouseDrag(event) {
+                if (drag) {
+					var point = new paper.Point(getCrossBrowserElementCoords(event));
+
+				    var x = Math.floor(point.x / cellWidth);
+				    var y = Math.floor(point.y / cellHeight);
+			    	
+			    	cells[x][y] = 1;
+			    	grid[x][y].fillColor = { hue: 35, saturation: 0.8, brightness: 0.9 };
+                }
+            	paper.view.update();
+            }
+
+            function mouseDown(event) {
+                //Set  flag to detect mouse drag
+				var point = new paper.Point(getCrossBrowserElementCoords(event));
+
+			    var x = Math.floor(point.x / cellWidth);
+			    var y = Math.floor(point.y / cellHeight);
+			    
+			    console.log("down at x: " + x + ", " + y + ", point: " + point.toString());
+
+			    cells[x][y] = 1;
+			    grid[x][y].fillColor = { hue: 35, saturation: 0.8, brightness: 0.9 };
+
+                drag = true;
+            	paper.view.update();
+            }
+			
+			var t = 0;
+			function onFrame() {
+
+			    // to keep the animation from going too fast, only
+			    // draw after the specified delay
+			    if (t === drawDelay) {
+			        nextGeneration();
+			        t = 0;
+			    }
+			    // only increment t if we are not paused
+			    if (!paused) {
+			        t += 1;
+			    }
+
+            	paper.view.update();
+
+				requestAnimationFrame(onFrame);
+            }
+
+            function initPaper() {
+
+				var canvas = document.getElementById('canvas');
+				canvas.width = 300;
+				canvas.height = 300;
+
+				paper.setup('canvas');
+
+	            for(let x=0 ; x<gridWidth ; x++) {
+	            	var column = [];
+	            	for(let y=0 ; y<gridHeight ; y++) {
+	            		var cell = new paper.Path.Rectangle(x*cellWidth, y*cellHeight, cellWidth, cellHeight);
+	            		cell.fillColor = 'gray';
+	            		cell.strokeColor = "#33333";
+	            		column.push(cell);
+	            	}
+	            	grid.push(column);
+	            }
+
+	            element.on('mousedown', mouseDown).on('mouseup', mouseUp).on('mousemove', mouseDrag);
+
+    			requestAnimationFrame(onFrame);
+
+            }
+
+            initPaper();
+
+			var onKeyDown = function(ev) {
+				// console.log("onKeyDown2");
+				var note = qwertyNotes[String.fromCharCode(ev.keyCode)]+1;
+				// console.log("ev.keyCode= " + ev.keyCode);
+				// console.log("note= " + note);
+
+				if (ev.keyCode == 32) {
+					// When space key: erase everything
+							
+					for (var x = 0; x < gridWidth; x += 1) {
+					    for (var y = 0; y < gridHeight; y += 1) {
+					        cells[x][y] = 0;
+					        nextGen[x][y] = 0;
+					        grid[x][y].fillColor = "#4a4950";
+					    }
+					}
+
+					return;
+					// return false;
+				}
+
+				if (note) {
+					cellY = Math.abs(note - 1)
+
+			    	cells[0][ cellY % gridHeight ] = 1;
+			    	grid[0][cellY % gridHeight].fillColor = { hue: 35, saturation: 0.8, brightness: 0.9 };
+
+					// ev.stopPropagation();
+					// ev.preventDefault();
+				}
+
+				// return false;
+			};
+
+			window.addEventListener('keydown', onKeyDown, false);
+
+        }
+    };
+});
