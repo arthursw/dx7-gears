@@ -544,8 +544,8 @@
 			if (ev.metaKey) return false;
 			if (ev.keyCode == 32) {
 				synth.panic();
-				// ev.stopPropagation();
-				// ev.preventDefault();
+				ev.stopPropagation();
+				ev.preventDefault();
 				return false;
 			}
 			if (note) {
@@ -1028,9 +1028,9 @@
 						        grid[x][y].fillColor = "#4a4950";
 						    }
 						}
-
-						return;
-						// return false;
+						ev.stopPropagation();
+						ev.preventDefault();
+						return false;
 					}
 					playNote(note);
 					// return false;
