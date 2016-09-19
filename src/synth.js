@@ -30,6 +30,9 @@ Synth.prototype.processMidiEvent = function(ev) {
 		this.noteOff(noteNumber);
 	} else if (cmd == 9) {
 		this.noteOn(noteNumber, velocity/99.0); // changed 127 to 99 to incorporate "overdrive"
+		var event = new Event('GLmidiKeyDown');
+      	event.noteNumber = noteNumber;
+      	window.dispatchEvent(event);
 	} else if (cmd == 10) {
 		//this.polyphonicAftertouch(noteNumber, velocity/127);
 	} else if (cmd == 11) {

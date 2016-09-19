@@ -30,6 +30,7 @@ var MIDI = function(synth) {
     } else if (cmd == 14) {
       synth.pitchBend( ((velocity * 128.0 + noteNumber)-8192)/8192.0 );
     }
+
   }
 
   function onSelectMidiChange( ev ) {

@@ -5,7 +5,7 @@
 	<link rel="stylesheet" type="text/css" href="synth.css">
 </head>
 <body ng-controller="MidiCtrl as midiCtrl">
-		<div class="dx7-container" ng-controller="PresetCtrl as presetCtrl">
+		<div id="dx7-container" class="dx7-container" ng-controller="PresetCtrl as presetCtrl">
 			<div class="dx7-top-panel">
 				<div class="dx7-logo"></div>
 				<div class="display">
@@ -27,6 +27,9 @@
 					MIDI Device: <select class="dx7-button" id="midiIn"></select>
 				</div>
 			</div>
+
+			<canvas id="canvas" hidpi="on" resize draw></canvas>
+
 			<div class="dx7-operators">
 				<div class="algorithm-diagram" style="background-image: url(images/algorithm-{{ ('0' + presetCtrl.params.algorithm).slice(-2) }}.svg)"></div>
 				<div class="operator" ng-repeat="operator in presetCtrl.presets[presetCtrl.selectedIndex].operators | reverse" ng-controller="OperatorCtrl">
@@ -168,7 +171,7 @@
 			</div>
 		</div>
 		
-		<canvas id="canvas" hidpi="on" resize draw></canvas>
+		
 		
 
 		<!-- <canvas id="processing-canvas" data-processing-sources="gears.js"></canvas> -->

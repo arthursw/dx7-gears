@@ -657,15 +657,87 @@ app.directive('draw', function () {
     return {
         restrict: 'AEC',
         link: function postLink(scope, element, attrs) {
+
+
+			// Accepts a MouseEvent as input and returns the x and y
+		    // coordinates relative to the target element.
+		    var getCrossBrowserElementCoords = function (mouseEvent)
+		    {
+		      var result = {
+		        x: 0,
+		        y: 0
+		      };
+
+		      if (!mouseEvent)
+		      {
+		        mouseEvent = window.event;
+		      }
+
+		      if (mouseEvent.pageX || mouseEvent.pageY)
+		      {
+		        result.x = mouseEvent.pageX;
+		        result.y = mouseEvent.pageY;
+		      }
+		      else if (mouseEvent.clientX || mouseEvent.clientY)
+		      {
+		        result.x = mouseEvent.clientX + document.body.scrollLeft +
+		          document.documentElement.scrollLeft;
+		        result.y = mouseEvent.clientY + document.body.scrollTop +
+		          document.documentElement.scrollTop;
+		      }
+
+		      if (mouseEvent.target)
+		      {
+		        var offEl = mouseEvent.target;
+		        var offX = 0;
+		        var offY = 0;
+
+		        if (typeof(offEl.offsetParent) != "undefined")
+		        {
+		          while (offEl)
+		          {
+		            offX += offEl.offsetLeft;
+		            offY += offEl.offsetTop;
+
+		            offEl = offEl.offsetParent;
+		          }
+		        }
+		        else
+		        {
+		          offX = offEl.x;
+		          offY = offEl.y;
+		        }
+
+		        result.x -= offX;
+		        result.y -= offY;
+		      }
+
+		      result.x /= window.devicePixelRatio;
+		      result.y /= window.devicePixelRatio;
+
+		      return result;
+		    };
+
+
+		    // ---------------------------- //
+		    // --- Musical game of life --- //
+			// ---------------------------- //
+
             var path;
             var drag = false;
 			
 			var drawDelay = 8;
             
-            var canvasWidth = 300;
-            var canvasHeight = 300;
+			var canvas = document.getElementById('canvas');
+			// var header = document.getElementById('dx7-top-panel');
 
-            var gridWidth = 3*4;
+            var canvasWidth = document.getElementById("dx7-container").clientWidth / window.devicePixelRatio;
+            var canvasHeight = canvasWidth * 0.6;
+			
+			canvas.width = canvasWidth;
+			canvas.height = canvasHeight;
+
+            var gridWidth = 2*4;
             var gridHeight = 2*12;
             
             var cellWidth = canvasWidth / gridWidth;
@@ -795,64 +867,6 @@ app.directive('draw', function () {
 			    }
 			};
 
-			// Accepts a MouseEvent as input and returns the x and y
-		    // coordinates relative to the target element.
-		    var getCrossBrowserElementCoords = function (mouseEvent)
-		    {
-		      var result = {
-		        x: 0,
-		        y: 0
-		      };
-
-		      if (!mouseEvent)
-		      {
-		        mouseEvent = window.event;
-		      }
-
-		      if (mouseEvent.pageX || mouseEvent.pageY)
-		      {
-		        result.x = mouseEvent.pageX;
-		        result.y = mouseEvent.pageY;
-		      }
-		      else if (mouseEvent.clientX || mouseEvent.clientY)
-		      {
-		        result.x = mouseEvent.clientX + document.body.scrollLeft +
-		          document.documentElement.scrollLeft;
-		        result.y = mouseEvent.clientY + document.body.scrollTop +
-		          document.documentElement.scrollTop;
-		      }
-
-		      if (mouseEvent.target)
-		      {
-		        var offEl = mouseEvent.target;
-		        var offX = 0;
-		        var offY = 0;
-
-		        if (typeof(offEl.offsetParent) != "undefined")
-		        {
-		          while (offEl)
-		          {
-		            offX += offEl.offsetLeft;
-		            offY += offEl.offsetTop;
-
-		            offEl = offEl.offsetParent;
-		          }
-		        }
-		        else
-		        {
-		          offX = offEl.x;
-		          offY = offEl.y;
-		        }
-
-		        result.x -= offX;
-		        result.y -= offY;
-		      }
-
-		      result.x *= 0.5;
-		      result.y *= 0.5;
-
-		      return result;
-		    };
 
             function mouseUp(event) {
                 //Clear Mouse Drag Flag
@@ -909,9 +923,6 @@ app.directive('draw', function () {
 
             function initPaper() {
 
-				var canvas = document.getElementById('canvas');
-				canvas.width = 300;
-				canvas.height = 300;
 
 				paper.setup('canvas');
 
@@ -934,6 +945,20 @@ app.directive('draw', function () {
 
             initPaper();
 
+            var playNote = function(note) {
+
+
+				if (note) {
+					cellY = Math.abs(note - 1)
+
+			    	cells[0][ cellY % gridHeight ] = 1;
+			    	grid[0][cellY % gridHeight].fillColor = { hue: 35, saturation: 0.8, brightness: 0.9 };
+
+					// ev.stopPropagation();
+					// ev.preventDefault();
+				}
+            };
+
 			var onKeyDown = function(ev) {
 				// console.log("onKeyDown2");
 				var note = qwertyNotes[String.fromCharCode(ev.keyCode)]+1;
@@ -954,21 +979,20 @@ app.directive('draw', function () {
 					return;
 					// return false;
 				}
-
-				if (note) {
-					cellY = Math.abs(note - 1)
-
-			    	cells[0][ cellY % gridHeight ] = 1;
-			    	grid[0][cellY % gridHeight].fillColor = { hue: 35, saturation: 0.8, brightness: 0.9 };
-
-					// ev.stopPropagation();
-					// ev.preventDefault();
-				}
-
+				playNote(note);
 				// return false;
 			};
 
+			var onMidiKeyDown = function(ev) {
+				console.log("onMidiKeyDown: ");
+				console.log(ev);
+				console.log(ev.noteNumber);
+				console.log(ev.noteNumber-noteOffset);
+				playNote(ev.noteNumber-noteOffset);
+			};
+
 			window.addEventListener('keydown', onKeyDown, false);
+			window.addEventListener('GLmidiKeyDown', onMidiKeyDown, false);
 
         }
     };
