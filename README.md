@@ -1,5 +1,12 @@
-DX7 Synth
+DX7 Gears
 =================
+
+A musical Game of Life based on [DX7 Synth](https://github.com/mmontag/dx7-synth-js/).
+
+The algorithm works as followed:
+ - only the first column evolves according to the Game of Life rules, 
+ - the cells move to the left at each step,
+ - once at the end of the track, the cell go back to the first column, creating a evolving cycles.
 
 ![](http://voices.washingtonpost.com/postrock/yamaha-dx-7.jpg)
 
