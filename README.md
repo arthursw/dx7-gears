@@ -1,6 +1,8 @@
 DX7 Gears
 =================
 
+[Live demo](https://arthursw.github.io/dx7-gears/)
+
 A musical Game of Life based on [DX7 Synth](https://github.com/mmontag/dx7-synth-js/).
 
 The algorithm works as followed:
